@@ -15,6 +15,24 @@ public class Opportunity {
     public void print(Object massage){
         System.out.print(massage);
     }
+
+
+    // getters
+    public String getCompany(){
+        return company;
+    }
+
+    public String getPosition(){
+        return position;
+    }
+
+    public String getStatus(){
+        return status;
+    }
+    
+    public String getDeadline(){
+        return deadline;
+    }
     
     // Constructor
     public Opportunity(String company, String position, String status, String deadline){
@@ -29,6 +47,10 @@ public class Opportunity {
     }
 
 
+
+
+
+    // main function
     public static void main(String[] args) {
         
         Opportunity myOpportunity = new Opportunity("Linkdine", "Software Endineer", "Hiring", "Monday");
