@@ -1,10 +1,13 @@
 package com.bornaboyafraz.opportunityos;
 
+import java.time.LocalDate;
+
 public class Opportunity {
     
     // Variables
-    String company, position, status;
-    String deadline; // Will be changed
+    String company, position, status, link;
+    LocalDate deadline;
+    Long id;
 
 
     // Functions
@@ -26,36 +29,35 @@ public class Opportunity {
         return position;
     }
 
+    public String getLink(){
+        return link;
+    }
+
     public String getStatus(){
         return status;
     }
-    
-    public String getDeadline(){
+
+    public Long getId(){
+        return id;
+    }
+
+    public LocalDate getDeadline(){
         return deadline;
     }
+
     
     // Constructor
-    public Opportunity(String company, String position, String status, String deadline){
+    public Opportunity(String company, String position, String status, LocalDate deadline, String link){
         this.company = company;
         this.position = position;
         this.status = status;
         this.deadline = deadline;
+        this.link = link;
 
     }
-    public void describe(){ // a function to describe the positions fully
-        printl(company+ " company || "+ position + " position ||" + status + " status ||" + deadline + " deadline");
-    }
-
-
-
-
-
-    // main function
-    public static void main(String[] args) {
-        
-        Opportunity myOpportunity = new Opportunity("Linkdine", "Software Endineer", "Hiring", "Monday");
-        myOpportunity.describe();
-
-    }
+    
+    // public void describe(){ // a function to describe the positions fully(Not needed for now!)
+    //     printl(company+ " company || "+ position + " position ||" + status + " status ||" + deadline + " deadline");
+    // }
 
 }
