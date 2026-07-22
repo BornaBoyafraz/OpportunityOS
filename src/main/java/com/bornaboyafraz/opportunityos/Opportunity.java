@@ -1,13 +1,22 @@
 package com.bornaboyafraz.opportunityos;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import java.time.LocalDate;
 
+@Entity
 public class Opportunity {
     
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     // Variables
     String company, position, status, link;
     LocalDate deadline;
-    Long id;
 
 
     // Functions
@@ -54,6 +63,10 @@ public class Opportunity {
         this.deadline = deadline;
         this.link = link;
 
+    }
+
+
+    public Opportunity(){
     }
     
     // public void describe(){ // a function to describe the positions fully(Not needed for now!)
