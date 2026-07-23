@@ -1,5 +1,6 @@
 package com.bornaboyafraz.opportunityos;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,14 +43,14 @@ public class OpportunityController {
 
     //Create
     @PostMapping("/opportunities")
-    public Opportunity addOpportunity(@RequestBody Opportunity opportunity) {
+    public Opportunity addOpportunity(@Valid @RequestBody Opportunity opportunity) {
 
         return repository.save(opportunity);
     }
 
     //update
     @PutMapping("opportunities/{id}")
-    public Opportunity updateOpportunity(@PathVariable Long id, @RequestBody Opportunity updated) {
+    public Opportunity updateOpportunity(@PathVariable Long id,@Valid @RequestBody Opportunity updated) {
 
         updated.setId(id);
         return repository.save(updated);

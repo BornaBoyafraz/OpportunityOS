@@ -4,20 +4,32 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Entity
 public class Opportunity {
     
-
+    // Variables
+    @NotBlank
+    private String company;
+    
+    @NotBlank
+    private String position;
+    
+    @NotBlank
+    private String status;
+    
+    private String link;
+    
+    @NotNull
+    private LocalDate deadline;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    // Variables
-    String company, position, status, link;
-    LocalDate deadline;
-
+    
 
     // Functions
     public void printl(Object massage){
