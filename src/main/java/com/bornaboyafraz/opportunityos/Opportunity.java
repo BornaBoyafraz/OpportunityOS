@@ -54,6 +54,11 @@ public class Opportunity {
         return deadline;
     }
 
+    //Setter
+    public void setId(Long id){
+        this.id = id;
+    }
+
     
     // Constructor
     public Opportunity(String company, String position, String status, LocalDate deadline, String link){
