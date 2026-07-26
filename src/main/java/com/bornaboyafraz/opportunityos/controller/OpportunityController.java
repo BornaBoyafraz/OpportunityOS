@@ -1,4 +1,6 @@
-package com.bornaboyafraz.opportunityos;
+package com.bornaboyafraz.opportunityos.controller;
+import com.bornaboyafraz.opportunityos.model.Opportunity;
+import com.bornaboyafraz.opportunityos.repository.OpportunityRepository;
 
 import jakarta.validation.Valid;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.bornaboyafraz.opportunityos;
+package com.bornaboyafraz.opportunityos.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

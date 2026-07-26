@@ -1,4 +1,5 @@
-package com.bornaboyafraz.opportunityos;
+package com.bornaboyafraz.opportunityos.repository;
+import com.bornaboyafraz.opportunityos.model.Opportunity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,4 +1,5 @@
 package com.bornaboyafraz.opportunityos;
+import com.bornaboyafraz.opportunityos.model.Opportunity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
