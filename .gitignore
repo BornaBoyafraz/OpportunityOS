@@ -39,3 +39,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### React / Vite ###
+node_modules/
+dist/

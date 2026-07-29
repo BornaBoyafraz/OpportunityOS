@@ -8,17 +8,17 @@ Students often track scholarships, internships, programs, grants, and school opp
 
 ## Current Project Status
 
-This repository currently contains the initial Spring Boot backend setup. The backend is configured for PostgreSQL and uses environment variables for sensitive database configuration. React is planned for the frontend.
+This repository contains a Spring Boot/PostgreSQL backend and a React + Vite
+frontend. The MVP supports user registration, login, private per-user
+opportunity tracking, and create/edit/delete workflows.
 
-## Planned MVP Features
+## Current MVP Features
 
 - User registration and login
 - Add opportunities
 - Edit and delete opportunities
 - Track application status
 - Deadlines
-- Search and filtering
-- Notes per application
 - Dashboard statistics
 - Responsive design
 
@@ -28,7 +28,8 @@ This repository currently contains the initial Spring Boot backend setup. The ba
 - Spring Boot
 - PostgreSQL
 - Maven
-- React planned for the frontend
+- React
+- Vite
 
 ## Local Setup
 
@@ -63,15 +64,27 @@ To run tests:
 ./mvnw test
 ```
 
+## Run the React Frontend
+
+Keep the backend running, then open a second terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open the URL shown by Vite (normally `http://localhost:5173`). The frontend
+expects the API at `http://localhost:8080`. See
+[`frontend/README.md`](frontend/README.md) for configuration and production
+build instructions.
+
 ## Project Roadmap
 
-- Build the core opportunity and application data model
-- Add authentication and user accounts
-- Implement opportunity CRUD endpoints
-- Add application status tracking and deadline support
-- Create dashboard statistics
-- Build the planned React frontend
-- Add search, filters, and responsive UI polish
+- Add search and filtering
+- Add notes per application
+- Add automated frontend tests
+- Continue accessibility and responsive UI polish
 
 ## Security
 
