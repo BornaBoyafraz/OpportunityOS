@@ -1,8 +1,8 @@
 package com.bornaboyafraz.opportunityos.controller;
 import com.bornaboyafraz.opportunityos.model.Opportunity;
 import com.bornaboyafraz.opportunityos.repository.OpportunityRepository;
-
 import jakarta.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,13 +27,13 @@ public class OpportunityController {
 
     // endpoint methods
     @GetMapping("/opportunities")
-    public List<Opportunity> gOpportunities(){
-
+    public List<Opportunity> gOpportunities(Principal principal){
+        
         // Opportunity opp1 = new Opportunity("Google", "SWE Intern", "Applied", LocalDate.of(2026, 6, 20), "https://google.com/careers");
         // //Opportunity opp2 = new Opportunity("Amazon", "Backend Intern", "Interested", "Saturday");
 
         // List<Opportunity> opportunitiesList = List.of(opp1);
-        return repository.findAll();
+        return repository.findByOwner(principal.getName());
     }
 
     //Read one
@@ -45,8 +45,8 @@ public class OpportunityController {
 
     //Create
     @PostMapping("/opportunities")
-    public Opportunity addOpportunity(@Valid @RequestBody Opportunity opportunity) {
-
+    public Opportunity addOpportunity(@Valid @RequestBody Opportunity opportunity, Principal principal) {
+        opportunity.setOwner(principal.getName());
         return repository.save(opportunity);
     }
 
@@ -63,6 +63,8 @@ public class OpportunityController {
     public void deleteOpportunity(@PathVariable long id){
         repository.deleteById(id);
     }
+
+
 
 
 

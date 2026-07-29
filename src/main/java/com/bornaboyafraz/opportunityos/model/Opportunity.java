@@ -30,6 +30,7 @@ public class Opportunity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    private String owner;
 
     // Functions
     public void printl(Object massage){
@@ -58,6 +59,10 @@ public class Opportunity {
         return status;
     }
 
+    public String getOwner(){
+        return owner;
+    }
+
     public Long getId(){
         return id;
     }
@@ -69,6 +74,10 @@ public class Opportunity {
     //Setter
     public void setId(Long id){
         this.id = id;
+    }
+
+    public void setOwner(String owner){
+        this.owner = owner;
     }
 
     
