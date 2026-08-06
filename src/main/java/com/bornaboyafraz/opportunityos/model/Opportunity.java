@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -31,6 +32,9 @@ public class Opportunity {
     private Long id;
     
     private String owner;
+
+    @Column(length = 2000)
+    private String notes;
 
     // Functions
     public void printl(Object massage){
@@ -71,6 +75,10 @@ public class Opportunity {
         return deadline;
     }
 
+    public String getNotes(){
+        return notes;
+    }
+
     //Setter
     public void setId(Long id){
         this.id = id;
@@ -78,6 +86,10 @@ public class Opportunity {
 
     public void setOwner(String owner){
         this.owner = owner;
+    }
+
+    public void setNotes(String notes){
+        this.notes = notes;
     }
 
     
