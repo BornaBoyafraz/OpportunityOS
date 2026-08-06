@@ -5,7 +5,9 @@ import com.bornaboyafraz.opportunityos.repository.OpportunityRepository;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -24,10 +27,28 @@ public class OpportunityController {
         this.repository = repository;
     }
 
-    // Read all — only the logged-in user's opportunities
+    // Read all — the logged-in user's opportunities, optionally filtered by status and/or a search term
     @GetMapping("/opportunities")
-    public List<Opportunity> getOpportunities(Principal principal) {
-        return repository.findByOwner(principal.getName());
+    public List<Opportunity> getOpportunities(Principal principal,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String search) {
+        return repository.findByOwner(principal.getName()).stream()
+                .filter(o -> status == null || status.isBlank() || status.equalsIgnoreCase(o.getStatus()))
+                .filter(o -> search == null || search.isBlank()
+                        || containsIgnoreCase(o.getCompany(), search)
+                        || containsIgnoreCase(o.getPosition(), search))
+                .toList();
+    }
+
+    private boolean containsIgnoreCase(String value, String search) {
+        return value != null && value.toLowerCase().contains(search.toLowerCase());
+    }
+
+    // Stats — count of the user's opportunities grouped by status (for the dashboard)
+    @GetMapping("/opportunities/stats")
+    public Map<String, Long> stats(Principal principal) {
+        return repository.findByOwner(principal.getName()).stream()
+                .collect(Collectors.groupingBy(Opportunity::getStatus, Collectors.counting()));
     }
 
     // Read one — must belong to the logged-in user
