@@ -56,12 +56,18 @@ async function request(
   }
 
   const contentType = response.headers.get("content-type") || "";
-  const responseBody =
-    response.status === 204
-      ? null
-      : contentType.includes("application/json")
-        ? await response.json()
-        : await response.text();
+  const rawBody = response.status === 204 ? null : await response.text();
+  let responseBody = rawBody;
+
+  // Only JSON-parse when the body is actually valid JSON; otherwise keep it as text.
+  // (Login returns plain text "Login successful", so a strict json() parse would throw.)
+  if (rawBody && contentType.includes("application/json")) {
+    try {
+      responseBody = JSON.parse(rawBody);
+    } catch {
+      responseBody = rawBody;
+    }
+  }
 
   if (!response.ok) {
     const message =
