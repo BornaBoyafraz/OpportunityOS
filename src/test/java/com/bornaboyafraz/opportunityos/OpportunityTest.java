@@ -24,4 +24,30 @@ class OpportunityTest {
         assertEquals("https://careers.google.com", opp.getLink());
     }
 
+    @Test
+    void settersUpdateAllFields(){
+        //Arrange
+        Opportunity opp = new Opportunity();
+
+        //Act
+        opp.setCompany("OpenAI");
+        opp.setPosition("Research Scholar");
+        opp.setStatus("Interview");
+        opp.setDeadline(LocalDate.of(2026, 9, 1));
+        opp.setLink("https://openai.com/careers");
+        opp.setNotes("Prepare a systems-design story");
+        opp.setOwner("borna");
+        opp.setId(42L);
+
+        //Assert
+        assertEquals("OpenAI", opp.getCompany());
+        assertEquals("Research Scholar", opp.getPosition());
+        assertEquals("Interview", opp.getStatus());
+        assertEquals(LocalDate.of(2026, 9, 1), opp.getDeadline());
+        assertEquals("https://openai.com/careers", opp.getLink());
+        assertEquals("Prepare a systems-design story", opp.getNotes());
+        assertEquals("borna", opp.getOwner());
+        assertEquals(42L, opp.getId());
+    }
+
 }

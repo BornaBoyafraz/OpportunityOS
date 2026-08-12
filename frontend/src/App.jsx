@@ -1,17 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ApiError, authApi, opportunityApi } from "./api";
+import {
+  STATUSES,
+  countByStatus,
+  filterOpportunities,
+  getDeadlineMeta,
+} from "./lib/opportunities";
 
 const SESSION_KEY = "opportunityos.credentials";
-
-const STATUSES = [
-  "Interested",
-  "Preparing",
-  "Applied",
-  "Interview",
-  "Offer",
-  "Rejected",
-  "Withdrawn",
-];
 
 const EMPTY_FORM = {
   company: "",
@@ -19,6 +15,7 @@ const EMPTY_FORM = {
   status: "Interested",
   deadline: "",
   link: "",
+  notes: "",
 };
 
 function readStoredCredentials() {
@@ -103,6 +100,12 @@ function Icon({ name, size = 18 }) {
         <path d="M5 3v3M19 3v3" />
         <path d="M4 5h16a1 1 0 0 1 1 1v14H3V6a1 1 0 0 1 1-1Z" />
         <path d="M3 10h18" />
+      </>
+    ),
+    search: (
+      <>
+        <circle cx="11" cy="11" r="7" />
+        <path d="m21 21-4.3-4.3" />
       </>
     ),
   };
@@ -313,53 +316,11 @@ function StatusBadge({ status }) {
   return <span className={`status-badge status-${className}`}>{status}</span>;
 }
 
-function getDeadlineMeta(deadline) {
-  if (!deadline) {
-    return { label: "No deadline", tone: "" };
-  }
-
-  const date = new Date(`${deadline}T00:00:00`);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const dayDifference = Math.round((date - today) / 86_400_000);
-  const formatted = new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    year: date.getFullYear() === today.getFullYear() ? undefined : "numeric",
-  }).format(date);
-
-  if (dayDifference < 0) {
-    return { label: `${formatted} · overdue`, tone: "overdue" };
-  }
-
-  if (dayDifference === 0) {
-    return { label: `${formatted} · today`, tone: "soon" };
-  }
-
-  if (dayDifference <= 7) {
-    return {
-      label: `${formatted} · ${dayDifference}d left`,
-      tone: "soon",
-    };
-  }
-
-  return { label: formatted, tone: "" };
-}
-
 function StatusRail({ opportunities }) {
-  const counts = useMemo(() => {
-    const nextCounts = Object.fromEntries(
-      STATUSES.map((status) => [status, 0]),
-    );
-
-    opportunities.forEach((opportunity) => {
-      if (nextCounts[opportunity.status] !== undefined) {
-        nextCounts[opportunity.status] += 1;
-      }
-    });
-
-    return nextCounts;
-  }, [opportunities]);
+  const counts = useMemo(
+    () => countByStatus(opportunities),
+    [opportunities],
+  );
 
   return (
     <div className="status-rail" aria-label="Opportunity status overview">
@@ -387,6 +348,11 @@ function OpportunityRow({ opportunity, onEdit, onDelete, isDeleting }) {
           <span>
             <strong>{opportunity.company}</strong>
             <small>{opportunity.position}</small>
+            {opportunity.notes ? (
+              <small className="opportunity-note" title={opportunity.notes}>
+                {opportunity.notes}
+              </small>
+            ) : null}
           </span>
         </div>
       </td>
@@ -453,6 +419,9 @@ function OpportunityCard({ opportunity, onEdit, onDelete, isDeleting }) {
       </div>
       <h3>{opportunity.position}</h3>
       <p className="card-company">{opportunity.company}</p>
+      {opportunity.notes ? (
+        <p className="card-note">{opportunity.notes}</p>
+      ) : null}
       <div className={`deadline ${deadline.tone}`}>
         <Icon name="calendar" size={16} />
         {deadline.label}
@@ -503,6 +472,7 @@ function OpportunityForm({ opportunity, onClose, onSave }) {
           status: opportunity.status || "Interested",
           deadline: opportunity.deadline || "",
           link: opportunity.link || "",
+          notes: opportunity.notes || "",
         }
       : EMPTY_FORM,
   );
@@ -538,6 +508,7 @@ function OpportunityForm({ opportunity, onClose, onSave }) {
         status: form.status,
         deadline: form.deadline,
         link: form.link.trim(),
+        notes: form.notes.trim(),
       });
     } catch (saveError) {
       setError(
@@ -642,6 +613,18 @@ function OpportunityForm({ opportunity, onClose, onSave }) {
                 placeholder="https://company.com/careers/..."
               />
             </label>
+
+            <label className="full-field">
+              <span>Notes</span>
+              <textarea
+                name="notes"
+                value={form.notes}
+                onChange={updateField}
+                rows={3}
+                maxLength={2000}
+                placeholder="Contacts, requirements, next steps…"
+              />
+            </label>
           </div>
 
           <div className="modal-actions">
@@ -677,6 +660,14 @@ function Dashboard({ credentials, onLogout }) {
   const [formOpportunity, setFormOpportunity] = useState(undefined);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+
+  const visibleOpportunities = useMemo(
+    () => filterOpportunities(opportunities, { search, status: statusFilter }),
+    [opportunities, search, statusFilter],
+  );
+  const isFiltering = search.trim() !== "" || statusFilter !== "";
 
   const loadOpportunities = useCallback(async () => {
     setError("");
@@ -874,10 +865,54 @@ function Dashboard({ credentials, onLogout }) {
               <h2>All opportunities</h2>
             </div>
             <span className="record-count">
-              {opportunities.length}{" "}
-              {opportunities.length === 1 ? "record" : "records"}
+              {isFiltering
+                ? `${visibleOpportunities.length} of ${opportunities.length}`
+                : `${opportunities.length} ${
+                    opportunities.length === 1 ? "record" : "records"
+                  }`}
             </span>
           </div>
+
+          {!isLoading && opportunities.length > 0 ? (
+            <div className="filter-bar">
+              <label className="search-field">
+                <span className="sr-only">Search opportunities</span>
+                <Icon name="search" size={16} />
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search company, position, or notes…"
+                />
+              </label>
+              <label className="status-filter">
+                <span className="sr-only">Filter by status</span>
+                <select
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                >
+                  <option value="">All statuses</option>
+                  {STATUSES.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {isFiltering ? (
+                <button
+                  className="button button-secondary clear-filters"
+                  type="button"
+                  onClick={() => {
+                    setSearch("");
+                    setStatusFilter("");
+                  }}
+                >
+                  Clear
+                </button>
+              ) : null}
+            </div>
+          ) : null}
 
           {isLoading ? (
             <div className="loading-state" aria-live="polite">
@@ -903,6 +938,24 @@ function Dashboard({ credentials, onLogout }) {
                 Add your first opportunity
               </button>
             </div>
+          ) : visibleOpportunities.length === 0 ? (
+            <div className="empty-state">
+              <span className="empty-mark" aria-hidden="true">
+                O<span>+</span>
+              </span>
+              <h3>No matches.</h3>
+              <p>Nothing fits that search or status filter yet.</p>
+              <button
+                className="button button-secondary"
+                type="button"
+                onClick={() => {
+                  setSearch("");
+                  setStatusFilter("");
+                }}
+              >
+                Clear filters
+              </button>
+            </div>
           ) : (
             <>
               <div className="table-wrap">
@@ -919,7 +972,7 @@ function Dashboard({ credentials, onLogout }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {opportunities.map((opportunity) => (
+                    {visibleOpportunities.map((opportunity) => (
                       <OpportunityRow
                         key={opportunity.id}
                         opportunity={opportunity}
@@ -932,7 +985,7 @@ function Dashboard({ credentials, onLogout }) {
                 </table>
               </div>
               <div className="mobile-card-list">
-                {opportunities.map((opportunity) => (
+                {visibleOpportunities.map((opportunity) => (
                   <OpportunityCard
                     key={opportunity.id}
                     opportunity={opportunity}

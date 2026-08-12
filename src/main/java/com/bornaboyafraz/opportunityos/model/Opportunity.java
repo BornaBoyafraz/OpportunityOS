@@ -92,6 +92,26 @@ public class Opportunity {
         this.notes = notes;
     }
 
+    public void setCompany(String company){
+        this.company = company;
+    }
+
+    public void setPosition(String position){
+        this.position = position;
+    }
+
+    public void setStatus(String status){
+        this.status = status;
+    }
+
+    public void setLink(String link){
+        this.link = link;
+    }
+
+    public void setDeadline(LocalDate deadline){
+        this.deadline = deadline;
+    }
+
     
     // Constructor
     public Opportunity(String company, String position, String status, LocalDate deadline, String link){

@@ -19,8 +19,15 @@ opportunity tracking, and create/edit/delete workflows.
 - Edit and delete opportunities
 - Track application status
 - Deadlines
+- Notes per opportunity
+- Search and status filtering
 - Dashboard statistics
 - Responsive design
+
+## Testing
+
+- Backend: JUnit tests run with `./mvnw test`.
+- Frontend: Vitest unit tests run with `npm test` (from the `frontend` folder).
 
 ## Technology Stack
 
@@ -81,10 +88,17 @@ build instructions.
 
 ## Project Roadmap
 
-- Add search and filtering
-- Add notes per application
-- Add automated frontend tests
-- Continue accessibility and responsive UI polish
+Completed during the 30-day build:
+
+- Search and status filtering
+- Notes per opportunity
+- Automated frontend tests (Vitest)
+
+Possible future work:
+
+- Deadline reminders / notifications
+- Export opportunities (CSV)
+- Continued accessibility and responsive UI polish
 
 ## Security
 
